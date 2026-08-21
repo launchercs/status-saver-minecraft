@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بررسی وضعیت سرور ماینکرفت</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- هدر -->
+        <header class="header">
+            <div class="server-status-badge">
+                <span class="dot"></span>
+                وضعیت سرور
+            </div>
+            <h1>بررسی وضعیت سرور ماینکرفت</h1>
+            <p class="subtitle">
+                وضعیت هر سرور ماینکرفت را بررسی کنید. اطلاعات لحظه‌ای تعداد بازیکنان، نسخه، MOTD و تاخیر را دریافت کنید.
+                سازگار با نسخه‌های جاوا و بدراک.
+            </p>
+        </header>
+
+        <!-- بخش جستجو -->
+        <section class="search-section">
+            <div class="search-box">
+                <div class="input-group">
+                    <label for="serverAddress">آدرس سرور</label>
+                    <input 
+                        type="text" 
+                        id="serverAddress" 
+                        placeholder="مثال: play.doomhosting.com"
+                        value="play.hypixel.net"
+                    >
+                </div>
+                <div class="input-group">
+                    <label for="serverPort">پورت (اختیاری)</label>
+                    <input 
+                        type="number" 
+                        id="serverPort" 
+                        placeholder="پیش‌فرض: 25565"
+                        value="25565"
+                    >
+                </div>
+                <button id="checkBtn" onclick="checkServer()">
+                    بررسی سرور
+                </button>
+            </div>
+        </section>
+
+        <!-- بخش نتایج -->
+        <section id="resultSection" class="result-section" style="display: none;">
+            <div class="result-grid">
+                <!-- وضعیت -->
+                <div class="result-card">
+                    <div class="card-icon">📡</div>
+                    <h3>وضعیت</h3>
+                    <p id="statusText" class="status-online">در حال بررسی...</p>
+                </div>
+                <!-- تعداد بازیکنان -->
+                <div class="result-card">
+                    <div class="card-icon">👥</div>
+                    <h3>بازیکنان آنلاین</h3>
+                    <p id="playersText">0</p>
+                </div>
+                <!-- نسخه -->
+                <div class="result-card">
+                    <div class="card-icon">⚙️</div>
+                    <h3>نسخه</h3>
+                    <p id="versionText">نامشخص</p>
+                </div>
+                <!-- تاخیر -->
+                <div class="result-card">
+                    <div class="card-icon">⏱️</div>
+                    <h3>تاخیر (پینگ)</h3>
+                    <p id="latencyText">-- ms</p>
+                </div>
+                <!-- MOTD -->
+                <div class="result-card full-width">
+                    <div class="card-icon">💬</div>
+                    <h3>پیام سرور (MOTD)</h3>
+                    <p id="motdText">بدون پیام</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- بخش خطا -->
+        <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+        <!-- فوتر -->
+        <footer class="footer">
+            <p>سوالی دارید؟ به <a href="#">Discord ما</a> بپیوندید.</p>
+        </footer>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
