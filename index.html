@@ -267,7 +267,6 @@
         function showError(message) {
             errorMsg.style.display = 'block';
             errorMsg.textContent = '❌ ' + message;
-            // ریست status ها
             statusText.textContent = 'آفلاین';
             statusText.className = 'status-value offline';
             pingText.textContent = '—';
@@ -289,7 +288,6 @@
             const trimmed = serverAddress.trim();
             hideError();
 
-            // تغییر وضعیت به درحال بارگذاری
             statusText.textContent = '⏳ درحال بررسی';
             statusText.className = 'status-value';
             pingText.textContent = '...';
@@ -297,8 +295,6 @@
             motdText.textContent = 'در حال ارتباط با سرور...';
 
             try {
-                // استفاده از API عمومی mcapi (نسخه 2)
-                // برای جاوا ادیشن از endpoint زیر استفاده می‌کنیم
                 const url = `https://mcapi.us/server/status?ip=${encodeURIComponent(trimmed)}`;
 
                 const response = await fetch(url, {
@@ -312,9 +308,7 @@
 
                 const data = await response.json();
 
-                // چک کردن وضعیت موفقیت‌آمیز از سمت API
                 if (!data || !data.status || data.status === 'error') {
-                    // اگر سرور آفلاین باشد یا ارور برگردد
                     if (data && data.error) {
                         throw new Error(data.error);
                     } else {
@@ -322,13 +316,11 @@
                     }
                 }
 
-                // --- استخراج اطلاعات ---
-                const online = data.online === true;   // boolean
+                const online = data.online === true;
                 const players = data.players || { now: 0, max: 0 };
                 const nowPlayers = players.now || 0;
                 const maxPlayers = players.max || 0;
                 const motd = data.motd || 'پیامی موجود نیست';
-                // پینگ: معمولاً latency برگردانده می‌شه، بعضی مواقع null
                 let ping = data.latency;
                 if (ping === undefined || ping === null || ping === 0) {
                     ping = '—';
@@ -336,7 +328,6 @@
                     ping = Math.round(ping) + ' ms';
                 }
 
-                // --- بروزرسانی UI ---
                 if (online) {
                     statusText.textContent = '✅ آنلاین';
                     statusText.className = 'status-value online';
@@ -347,17 +338,12 @@
 
                 pingText.textContent = (ping === '—') ? '—' : ping;
                 playersText.textContent = `${nowPlayers} / ${maxPlayers}`;
-
-                // نمایش MOTD (با رنگ‌بندی ساده)
                 motdText.innerHTML = motd.replace(/\n/g, '<br>') || 'بدون پیام';
 
-                // اگر آنلاین نباشه ولی خطایی نیومده، باز هم هشدار نمایش نمیدیم.
-                // ولی برای شفافیت اگر آفلاین باشه پیام می‌دیم
                 if (!online) {
                     motdText.innerHTML = 'سرور در حال حاضر آفلاین است';
                 }
 
-                // خطا رو مخفی میکنیم چون همه چی اوکی بوده
                 hideError();
 
             } catch (error) {
@@ -367,7 +353,6 @@
                     msg = 'مشکل در اتصال به اینترنت یا CORS';
                 }
                 showError(msg);
-                // reset some fields
                 statusText.textContent = 'آفلاین';
                 statusText.className = 'status-value offline';
                 pingText.textContent = '—';
@@ -376,12 +361,10 @@
             }
         }
 
-        // ---- رویدادها ----
         checkBtn.addEventListener('click', function() {
             fetchServerStatus(serverInput.value);
         });
 
-        // با زدن Enter هم بررسی کنه
         serverInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -389,8 +372,6 @@
             }
         });
 
-        // ---- بارگذاری اولیه با مقدار پیش‌فرض (mc.hypixel.net) ----
-        // برای اینکه کاربر بلافاصله نتیجه ببینه
         window.addEventListener('load', function() {
             fetchServerStatus(serverInput.value);
         });
@@ -399,4 +380,4 @@
 </script>
 
 </body>
-    </html>
+            </html>
