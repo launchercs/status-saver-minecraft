@@ -3,96 +3,400 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بررسی وضعیت سرور ماینکرفت</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>وضعیت سرور ماینکرفت</title>
+    <style>
+        /* ----- Reset & Base ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(145deg, #1a1e2c, #2b3042);
+            padding: 20px;
+        }
+
+        .card {
+            background: rgba(30, 35, 50, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 40px;
+            padding: 40px 35px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.7), inset 0 1px 3px rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: 0.3s;
+        }
+
+        h1 {
+            font-size: 26px;
+            font-weight: 600;
+            color: #f0f3fa;
+            text-align: center;
+            margin-bottom: 28px;
+            letter-spacing: 1px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            color: #b9c4e6;
+            font-size: 15px;
+            font-weight: 500;
+            padding-right: 6px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .input-row input {
+            flex: 2;
+            min-width: 160px;
+            padding: 14px 18px;
+            border: none;
+            border-radius: 30px;
+            background: #232837;
+            color: #f0f3fa;
+            font-size: 16px;
+            outline: 2px solid transparent;
+            transition: 0.25s;
+            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .input-row input:focus {
+            outline: 2px solid #6c8cff;
+            background: #1e253a;
+        }
+
+        .input-row input::placeholder {
+            color: #6b789b;
+            font-weight: 300;
+        }
+
+        .input-row button {
+            flex: 1;
+            min-width: 100px;
+            padding: 14px 18px;
+            border: none;
+            border-radius: 30px;
+            background: linear-gradient(135deg, #5f7cff, #3b57d9);
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 8px 18px rgba(59, 87, 217, 0.35);
+            letter-spacing: 0.5px;
+        }
+
+        .input-row button:hover {
+            transform: scale(1.02);
+            background: linear-gradient(135deg, #738cff, #4a66e6);
+            box-shadow: 0 10px 24px rgba(59, 87, 217, 0.5);
+        }
+
+        .input-row button:active {
+            transform: scale(0.97);
+        }
+
+        /* ----- Status Box ----- */
+        .status-box {
+            background: #1d2337;
+            border-radius: 30px;
+            padding: 22px 20px;
+            margin-top: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            box-shadow: inset 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .status-item:last-child {
+            border-bottom: none;
+        }
+
+        .status-label {
+            color: #98a7d4;
+            font-weight: 500;
+            font-size: 17px;
+        }
+
+        .status-value {
+            font-weight: 600;
+            font-size: 18px;
+            background: #2a3149;
+            padding: 6px 18px;
+            border-radius: 40px;
+            color: #e8edff;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3);
+            min-width: 70px;
+            text-align: center;
+        }
+
+        .status-value.online {
+            color: #7effb7;
+            background: #1f3d33;
+            border: 1px solid #2faa6e;
+        }
+
+        .status-value.offline {
+            color: #ff8a8a;
+            background: #3d2828;
+            border: 1px solid #c74a4a;
+        }
+
+        .status-value.ping {
+            color: #b3c7ff;
+        }
+
+        .motd {
+            margin-top: 20px;
+            padding: 14px 16px;
+            background: #121725;
+            border-radius: 24px;
+            text-align: center;
+            color: #c8d3f0;
+            font-size: 16px;
+            border: 1px solid #2e3650;
+            word-break: break-word;
+            line-height: 1.7;
+        }
+
+        .motd span {
+            opacity: 0.7;
+            font-size: 14px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        #errorMsg {
+            color: #ff8f8f;
+            background: #391f1f;
+            padding: 12px 16px;
+            border-radius: 30px;
+            margin-top: 18px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+            border: 1px solid #b34a4a;
+        }
+
+        .footer-note {
+            text-align: center;
+            color: #5d6b8f;
+            margin-top: 22px;
+            font-size: 13px;
+            letter-spacing: 0.3px;
+        }
+
+        @media (max-width: 500px) {
+            .card { padding: 30px 18px; }
+            .input-row input { min-width: 130px; }
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <!-- هدر -->
-        <header class="header">
-            <div class="server-status-badge">
-                <span class="dot"></span>
-                وضعیت سرور
-            </div>
-            <h1>بررسی وضعیت سرور ماینکرفت</h1>
-            <p class="subtitle">
-                وضعیت هر سرور ماینکرفت را بررسی کنید. اطلاعات لحظه‌ای تعداد بازیکنان، نسخه، MOTD و تاخیر را دریافت کنید.
-                سازگار با نسخه‌های جاوا و بدراک.
-            </p>
-        </header>
 
-        <!-- بخش جستجو -->
-        <section class="search-section">
-            <div class="search-box">
-                <div class="input-group">
-                    <label for="serverAddress">آدرس سرور</label>
-                    <input 
-                        type="text" 
-                        id="serverAddress" 
-                        placeholder="مثال: play.doomhosting.com"
-                        value="play.hypixel.net"
-                    >
-                </div>
-                <div class="input-group">
-                    <label for="serverPort">پورت (اختیاری)</label>
-                    <input 
-                        type="number" 
-                        id="serverPort" 
-                        placeholder="پیش‌فرض: 25565"
-                        value="25565"
-                    >
-                </div>
-                <button id="checkBtn" onclick="checkServer()">
-                    بررسی سرور
-                </button>
-            </div>
-        </section>
+<div class="card">
+    <h1>⚡ وضعیت سرور ماینکرفت</h1>
 
-        <!-- بخش نتایج -->
-        <section id="resultSection" class="result-section" style="display: none;">
-            <div class="result-grid">
-                <!-- وضعیت -->
-                <div class="result-card">
-                    <div class="card-icon">📡</div>
-                    <h3>وضعیت</h3>
-                    <p id="statusText" class="status-online">در حال بررسی...</p>
-                </div>
-                <!-- تعداد بازیکنان -->
-                <div class="result-card">
-                    <div class="card-icon">👥</div>
-                    <h3>بازیکنان آنلاین</h3>
-                    <p id="playersText">0</p>
-                </div>
-                <!-- نسخه -->
-                <div class="result-card">
-                    <div class="card-icon">⚙️</div>
-                    <h3>نسخه</h3>
-                    <p id="versionText">نامشخص</p>
-                </div>
-                <!-- تاخیر -->
-                <div class="result-card">
-                    <div class="card-icon">⏱️</div>
-                    <h3>تاخیر (پینگ)</h3>
-                    <p id="latencyText">-- ms</p>
-                </div>
-                <!-- MOTD -->
-                <div class="result-card full-width">
-                    <div class="card-icon">💬</div>
-                    <h3>پیام سرور (MOTD)</h3>
-                    <p id="motdText">بدون پیام</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- بخش خطا -->
-        <div id="errorMessage" class="error-message" style="display: none;"></div>
-
-        <!-- فوتر -->
-        <footer class="footer">
-            <p>سوالی دارید؟ به <a href="#">Discord ما</a> بپیوندید.</p>
-        </footer>
+    <div class="input-group">
+        <label>آدرس سرور (IP یا Domain)</label>
+        <div class="input-row">
+            <input type="text" id="serverInput" placeholder="مثلاً: play.example.com" value="mc.hypixel.net">
+            <button id="checkBtn">بررسی</button>
+        </div>
     </div>
 
-    <script src="js/script.js"></script>
+    <div class="status-box" id="statusBox">
+        <div class="status-item">
+            <span class="status-label">🟢 وضعیت</span>
+            <span class="status-value" id="statusText">—</span>
+        </div>
+        <div class="status-item">
+            <span class="status-label">📶 پینگ (ms)</span>
+            <span class="status-value ping" id="pingText">—</span>
+        </div>
+        <div class="status-item">
+            <span class="status-label">👥 پلیر‌ها</span>
+            <span class="status-value" id="playersText">—</span>
+        </div>
+        <div class="motd" id="motdBox">
+            <span>📜 پیام سرور</span>
+            <span id="motdText">جهت دریافت اطلاعات، دکمه را بزنید</span>
+        </div>
+    </div>
+
+    <div id="errorMsg">❌ خطا در اتصال یا سرور آفلاین</div>
+    <div class="footer-note">با استفاده از mcapi.us • جاوا ادیشن</div>
+</div>
+
+<script>
+    (function() {
+        // ---- عناصر ----
+        const serverInput = document.getElementById('serverInput');
+        const checkBtn = document.getElementById('checkBtn');
+        const statusText = document.getElementById('statusText');
+        const pingText = document.getElementById('pingText');
+        const playersText = document.getElementById('playersText');
+        const motdText = document.getElementById('motdText');
+        const errorMsg = document.getElementById('errorMsg');
+
+        // ---- تابع کمکی برای نمایش خطا ----
+        function showError(message) {
+            errorMsg.style.display = 'block';
+            errorMsg.textContent = '❌ ' + message;
+            // ریست status ها
+            statusText.textContent = 'آفلاین';
+            statusText.className = 'status-value offline';
+            pingText.textContent = '—';
+            playersText.textContent = '—';
+            motdText.textContent = 'سرور پاسخ نداد';
+        }
+
+        function hideError() {
+            errorMsg.style.display = 'none';
+        }
+
+        // ---- تابع اصلی گرفتن وضعیت ----
+        async function fetchServerStatus(serverAddress) {
+            if (!serverAddress || serverAddress.trim() === '') {
+                showError('لطفاً آدرس سرور را وارد کنید');
+                return;
+            }
+
+            const trimmed = serverAddress.trim();
+            hideError();
+
+            // تغییر وضعیت به درحال بارگذاری
+            statusText.textContent = '⏳ درحال بررسی';
+            statusText.className = 'status-value';
+            pingText.textContent = '...';
+            playersText.textContent = '...';
+            motdText.textContent = 'در حال ارتباط با سرور...';
+
+            try {
+                // استفاده از API عمومی mcapi (نسخه 2)
+                // برای جاوا ادیشن از endpoint زیر استفاده می‌کنیم
+                const url = `https://mcapi.us/server/status?ip=${encodeURIComponent(trimmed)}`;
+
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // چک کردن وضعیت موفقیت‌آمیز از سمت API
+                if (!data || !data.status || data.status === 'error') {
+                    // اگر سرور آفلاین باشد یا ارور برگردد
+                    if (data && data.error) {
+                        throw new Error(data.error);
+                    } else {
+                        throw new Error('سرور آفلاین یا آدرس نامعتبر');
+                    }
+                }
+
+                // --- استخراج اطلاعات ---
+                const online = data.online === true;   // boolean
+                const players = data.players || { now: 0, max: 0 };
+                const nowPlayers = players.now || 0;
+                const maxPlayers = players.max || 0;
+                const motd = data.motd || 'پیامی موجود نیست';
+                // پینگ: معمولاً latency برگردانده می‌شه، بعضی مواقع null
+                let ping = data.latency;
+                if (ping === undefined || ping === null || ping === 0) {
+                    ping = '—';
+                } else {
+                    ping = Math.round(ping) + ' ms';
+                }
+
+                // --- بروزرسانی UI ---
+                if (online) {
+                    statusText.textContent = '✅ آنلاین';
+                    statusText.className = 'status-value online';
+                } else {
+                    statusText.textContent = '❌ آفلاین';
+                    statusText.className = 'status-value offline';
+                }
+
+                pingText.textContent = (ping === '—') ? '—' : ping;
+                playersText.textContent = `${nowPlayers} / ${maxPlayers}`;
+
+                // نمایش MOTD (با رنگ‌بندی ساده)
+                motdText.innerHTML = motd.replace(/\n/g, '<br>') || 'بدون پیام';
+
+                // اگر آنلاین نباشه ولی خطایی نیومده، باز هم هشدار نمایش نمیدیم.
+                // ولی برای شفافیت اگر آفلاین باشه پیام می‌دیم
+                if (!online) {
+                    motdText.innerHTML = 'سرور در حال حاضر آفلاین است';
+                }
+
+                // خطا رو مخفی میکنیم چون همه چی اوکی بوده
+                hideError();
+
+            } catch (error) {
+                console.error('Error fetching server status:', error);
+                let msg = error.message || 'خطای ناشناخته';
+                if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) {
+                    msg = 'مشکل در اتصال به اینترنت یا CORS';
+                }
+                showError(msg);
+                // reset some fields
+                statusText.textContent = 'آفلاین';
+                statusText.className = 'status-value offline';
+                pingText.textContent = '—';
+                playersText.textContent = '—';
+                motdText.textContent = 'خطا در دریافت اطلاعات';
+            }
+        }
+
+        // ---- رویدادها ----
+        checkBtn.addEventListener('click', function() {
+            fetchServerStatus(serverInput.value);
+        });
+
+        // با زدن Enter هم بررسی کنه
+        serverInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                checkBtn.click();
+            }
+        });
+
+        // ---- بارگذاری اولیه با مقدار پیش‌فرض (mc.hypixel.net) ----
+        // برای اینکه کاربر بلافاصله نتیجه ببینه
+        window.addEventListener('load', function() {
+            fetchServerStatus(serverInput.value);
+        });
+
+    })();
+</script>
+
 </body>
-</html>
+    </html>
