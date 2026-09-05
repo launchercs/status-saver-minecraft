@@ -1,7 +1,7 @@
 here// ============================================
 // تنظیمات
 // ============================================
-const API_URL = 'http://localhost:3000/api/status'; // آدرس بک‌اند خودت
+const API_URL = 'https://api.mcexe.ir/mc/java/'; // آدرس بک‌اند خودت
 // برای دپلوی: 'https://your-backend.onrender.com/api/status'
 
 // ============================================
